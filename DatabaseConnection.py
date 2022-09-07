@@ -1,7 +1,7 @@
 import sqlite3
 
 # Database name
-databaseName = "testDB.db"
+databaseName = ""
 
 # Connect to database
 connection = sqlite3.connect(databaseName)
