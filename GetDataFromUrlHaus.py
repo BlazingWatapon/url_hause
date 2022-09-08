@@ -1,7 +1,8 @@
 import csv
 from datetime import datetime
 import time
-from UrlHaus.DatabaseConnection import connection, cursor
+import UrlHausAPI
+from DatabaseConnection import connection, cursor
 import socket
 
 
@@ -67,11 +68,17 @@ def create_table():
     query += "reporter     VARCHAR (255));"
     cursor.execute(query)
 
+def utc_datetime(dateadded):
+    dateadded += "+0000"
+    datetime_object = datetime.strptime(dateadded, '%Y-%m-%d %H:%M:%S%z')
+    dateadded = datetime_object.isoformat('T')
+    return dateadded
+
 # up list information to database
 def update_database(information, existed_id):
     for line in information:
         id = line[0]
-        dateadded = line[1]
+        dateadded = utc_datetime(line[1])
         url = line[2]
         url_status = line[3]
         last_online = line[4]
@@ -85,7 +92,7 @@ def update_database(information, existed_id):
         # check whether if ID already existed
         if id not in existed_id:
             query = "insert into url_hause_data (id, dateadded, url, ip_address, port, url_status, last_online, threat, tags, urlhaus_link, reporter) values ("
-            query += id + ", datetime('" + dateadded + "'), '"
+            query += id + ", '" + dateadded + "', '"
             query += url + "', '" + ip_address + "', " + port + ", '" + url_status + "', '"
             query += last_online + "', '" + threat + "', '"
             query += tags + "', '" + urlhaus_link + "', '" + reporter + "');"
