@@ -55,7 +55,7 @@ def get_ip_port(url):
 
 def create_table():
     query = "CREATE TABLE IF NOT EXISTS url_hause_data ("
-    query += "id           INTEGER       PRIMARY KEY,"
+    query += "id           INTEGER        PRIMARY KEY,"
     query += "dateadded   DATETIME,"
     query += "url          VARCHAR (255),"
     query += "ip_address   VARCHAR (255),"
@@ -91,12 +91,13 @@ def update_database(information, existed_id):
         port = id_port_list[1]
         # check whether if ID already existed
         if id not in existed_id:
-            query = "insert into url_hause_data (id, dateadded, url, ip_address, port, url_status, last_online, threat, tags, urlhaus_link, reporter) values ("
-            query += id + ", '" + dateadded + "', '"
-            query += url + "', '" + ip_address + "', " + port + ", '" + url_status + "', '"
-            query += last_online + "', '" + threat + "', '"
-            query += tags + "', '" + urlhaus_link + "', '" + reporter + "');"
-            cursor.execute(query)
+            query = "insert into url_hause_data values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            param = [id, dateadded, url, ip_address, port, url_status, last_online, threat, tags, urlhaus_link, reporter]
+            cursor.execute(query, param)
+        else:
+            query = "update url_hause_data set dateadded = ?, url = ?, ip_address = ?, port = ?, url_status = ?, last_online = ?, threat = ?, tags = ?,urlhaus_link = ?, reporter = ? where id = ?"
+            param = [dateadded, url, ip_address, port, url_status, last_online, threat, tags, urlhaus_link, reporter, id]
+            cursor.execute(query, param)
         connection.commit()
 
 # Main function
